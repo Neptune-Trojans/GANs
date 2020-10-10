@@ -1,8 +1,6 @@
 import os
 
-from DCGAN.training_visualization import Visualization
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 from absl import app
 
@@ -10,6 +8,7 @@ from DCGAN.BatchGenerator import BatchDataGenerator
 from DCGAN.training_arguments import Arguments
 from DCGAN.discriminator import Discriminator
 from DCGAN.generator import Generator
+from DCGAN.training_visualization import Visualization
 
 
 class Trainer:
@@ -102,7 +101,7 @@ class Trainer:
                                   generator_optimizer._decayed_lr(tf.float32).numpy(),
                                   discriminator_optimizer._decayed_lr(tf.float32).numpy()))
 
-            Visualization.generate_and_save_images(generator, epoch, self._visualization_seed)
+            Visualization.generate_and_save_images(generator, epoch, self._visualization_seed, self._arguments.visualization_folder)
 
 
 

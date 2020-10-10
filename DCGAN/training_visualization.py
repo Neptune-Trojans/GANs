@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 # Turn interactive plotting off
 plt.ioff()
@@ -6,7 +7,9 @@ plt.ioff()
 class Visualization:
 
     @staticmethod
-    def generate_and_save_images(model, epoch, test_input):
+    def generate_and_save_images(model, epoch, test_input, visualization_folder):
+        if not os.path.exists(visualization_folder):
+            os.makedirs(visualization_folder)
 
         predictions = model(test_input, training=False)
 
@@ -17,4 +20,5 @@ class Visualization:
             plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
             plt.axis('off')
 
-        plt.savefig('epoch_{:04d}.png'.format(epoch))
+        result_path = os.path.join(visualization_folder, 'epoch_{:02d}.png')
+        plt.savefig(result_path.format(epoch))
