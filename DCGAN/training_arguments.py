@@ -7,7 +7,7 @@ class Arguments:
     buffer_size: int = 60000
     noise_dim: int = 100
     num_examples_to_generate: int = 16
-    epochs: int = 32
+    epochs: int = 128
     init_lr: float = 1e-4
     visualization_folder: str = './training_visualization'
 
