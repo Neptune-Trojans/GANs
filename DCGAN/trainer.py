@@ -120,7 +120,7 @@ def main(_):
 
     arguments = Arguments()
 
-    train_dataset = BatchDataGenerator.load_data(arguments.buffer_size, arguments.batch_size)
+    train_dataset = BatchDataGenerator.load_data_mnist(arguments.buffer_size, arguments.batch_size)
     trainer = Trainer(arguments, train_dataset)
 
     trainer.train()
