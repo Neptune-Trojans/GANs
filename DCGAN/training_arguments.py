@@ -1,4 +1,11 @@
+from enum import Enum
+
 from dataclasses import dataclass
+
+
+class SupportedModels(Enum):
+    CIFAR10 = 'CIFAR10'
+    MNIST = 'MNIST'
 
 
 @dataclass(frozen=True)
@@ -10,6 +17,7 @@ class Arguments:
     epochs: int = 256
     init_lr: float = 1e-4
     visualization_folder: str = './training_visualization'
+    model: str = SupportedModels.CIFAR10
 
     @property
     def epoch_iteration_steps(self):
