@@ -20,6 +20,8 @@ class Trainer:
         self._visualization_seed = tf.random.normal([self._arguments.num_examples_to_generate,
                                                      self._arguments.noise_dim])
 
+        self._visualization = Visualization(self._arguments.visualization_folder, self._visualization_seed)
+
     @staticmethod
     def _create_optimizer(init_lr: float,
                           num_train_steps: int,
@@ -101,7 +103,8 @@ class Trainer:
                                   generator_optimizer._decayed_lr(tf.float32).numpy(),
                                   discriminator_optimizer._decayed_lr(tf.float32).numpy()))
 
-            Visualization.generate_and_save_images(generator, epoch, self._visualization_seed, self._arguments.visualization_folder)
+            self._visualization.save_predicted_images(generator, epoch)
+        self._visualization.generate_gif_image()
 
 
 
