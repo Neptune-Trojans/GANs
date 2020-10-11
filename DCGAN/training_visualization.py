@@ -2,7 +2,7 @@ import os
 import glob
 import shutil
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 import matplotlib.pyplot as plt
 # Turn interactive plotting off
@@ -12,13 +12,13 @@ plt.ioff()
 class Visualization:
     def __init__(self, visualization_base_folder, visualization_seed):
         self.visualization_base_folder = visualization_base_folder
-        self._generate_vis_folder()
         self._visualization_seed = visualization_seed
         self._generate_vis_folder()
+        self.fnt = ImageFont.truetype("FreeMonoBold.ttf", 25)
 
     @property
     def epoch_file_name(self):
-        return 'epoch_{:02d}.png'
+        return '{:03d}.png'
 
     @property
     def gif_file_name(self):
@@ -54,8 +54,13 @@ class Visualization:
     def generate_gif_image(self):
         frames = []
         for root, dirs, files in os.walk(os.path.abspath(self.visualization_base_folder)):
-            for file in files:
-                frames.append(Image.open(os.path.join(root, file)))
+            for file in sorted(files):
+                file_name = os.path.splitext(file)[0]
+                img = Image.open(os.path.join(root, file))
+                draw = ImageDraw.Draw(img)
+                width, height = img.size
+                draw.text((width//2, 50), 'epoch {}'.format(file_name), font=self.fnt, fill="black")
+                frames.append(img)
 
         frames[0].save(fp=self.training_summary_path,
                        format='GIF',
