@@ -1,5 +1,3 @@
-import os
-
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 from absl import app
@@ -8,7 +6,7 @@ from DCGAN.BatchGenerator import BatchDataGenerator
 from DCGAN.training_arguments import Arguments, SupportedModels
 from DCGAN.discriminator import Discriminator
 from DCGAN.generator import Generator
-from DCGAN.training_visualization import Visualization
+from Helpers.training_visualization import Visualization
 
 
 class Trainer:
