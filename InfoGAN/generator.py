@@ -1,40 +1,33 @@
 import tensorflow as tf
+from tensorflow.keras import layers
 
 
-class Generator(tf.keras.Model):
+class Generator:
+
     def __init__(self):
-        super(Generator, self).__init__()
+        pass
 
-        self.d1 = tf.keras.layers.Dense(1024, use_bias=False)
-        self.a1 = tf.keras.layers.ReLU()
-        self.b1 = tf.keras.layers.BatchNormalization()
-        self.d2 = tf.keras.layers.Dense(7 * 7 * 128, use_bias=False)
-        self.a2 = tf.keras.layers.ReLU()
-        self.b2 = tf.keras.layers.BatchNormalization()
-        self.r2 = tf.keras.layers.Reshape([7, 7, 128])
+    @staticmethod
+    def make_generator_model():
+        inputs = tf.keras.layers.Input(shape=(100,))
 
-        self.c3 = tf.keras.layers.Conv2DTranspose(64, (4, 4), strides=(2, 2), padding="same")
-        self.a3 = tf.keras.layers.ReLU()
-        self.b3 = tf.keras.layers.BatchNormalization()
+        x = layers.Dense(7 * 7 * 256, use_bias=False)(inputs)
+        x = layers.BatchNormalization()(x)
+        x = layers.LeakyReLU()(x)
 
-        self.c4 = tf.keras.layers.Conv2DTranspose(1, (4, 4), strides=(2, 2), padding="same")
+        x = layers.Reshape((7, 7, 256))(x)
 
-    def call(self, x, training=True):
-        x = self.d1(x)
-        x = self.b1(x, training=training)
-        x = self.a1(x)
+        x = layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False)(x)
 
-        x = self.d2(x)
-        x = self.b2(x, training=training)
-        x = self.a2(x)
-        x = self.r2(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.LeakyReLU()(x)
 
-        x = self.c3(x)
-        x = self.b3(x, training=training)
-        x = self.a3(x)
+        x = layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False)(x)
 
-        x = self.c4(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.LeakyReLU()(x)
 
-        x = tf.nn.tanh(x)
+        x = layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh')(x)
+        model = tf.keras.models.Model(inputs=inputs, outputs=[x])
 
-        return x
+        return model

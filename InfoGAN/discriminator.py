@@ -1,39 +1,40 @@
 import tensorflow as tf
+from tensorflow.keras import layers
 
 
-class Discriminator(tf.keras.Model):
+class Discriminator:
     def __init__(self):
-        super(Discriminator, self).__init__()
+        pass
 
-        self.c1 = tf.keras.layers.Conv2D(64, (4, 4), strides=(2, 2), padding="same")
-        self.a1 = tf.keras.layers.LeakyReLU()
+    @staticmethod
+    def make_discriminator_model(n_class=10):
+        inputs = tf.keras.layers.Input(shape=(28, 28, 1))
 
-        self.c2 = tf.keras.layers.Conv2D(128, (4, 4), strides=(2, 2), padding="same")
-        self.a2 = tf.keras.layers.LeakyReLU()
-        self.b2 = tf.keras.layers.BatchNormalization()
-        self.f2 = tf.keras.layers.Flatten()
+        x = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same')(inputs)
+        x = layers.LeakyReLU()(x)
+        x = layers.Dropout(0.3)(x)
 
-        self.d3 = tf.keras.layers.Dense(1024)
-        self.a3 = tf.keras.layers.LeakyReLU()
-        self.b3 = tf.keras.layers.BatchNormalization()
+        x = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same')(x)
+        x = layers.LeakyReLU()(x)
+        x = layers.Dropout(0.3)(x)
 
-        self.D = tf.keras.layers.Dense(1)
+        flatten = layers.Flatten()(x)
+        o = layers.Dense(1)(flatten)
+        # TODO Add activation ? change model little bit ?
+        disc_model = tf.keras.models.Model(inputs=inputs, outputs=[o])
 
-    def call(self, x, training=True):
-        x = self.c1(x)
-        x = self.a1(x)
+        q = layers.Dense(1000)(flatten)
+        q = layers.Dense(100)(q)
 
-        x = self.c2(x)
-        x = self.b2(x, training=training)
-        x = self.a2(x)
-        x = self.f2(x)
+        # Gaussian distribution mean (continuous output)
+        mu = layers.Dense(1)(q)
 
-        x = self.d3(x)
-        x = self.b3(x, training=training)
-        x = self.a3(x)
+        # Gaussian distribution standard deviation (exponential activation to ensure the value is positive)
+        sigma = layers.Dense(1, activation=lambda x: tf.math.exp(x))(q)
 
-        mid = x
+        # Classification (discrete output)
+        clf_out = layers.Dense(n_class, activation="softmax")(q)
 
-        D = self.D(x)
+        q_model = tf.keras.models.Model(inputs=inputs, outputs=[clf_out, mu, sigma])
 
-        return D, mid
+        return disc_model, q_model

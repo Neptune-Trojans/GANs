@@ -24,14 +24,10 @@ class INFOGAN():
         # Build and the discriminator and recognition network
         self.discriminator, self.auxilliary = self.build_disk_and_q_net()
 
-        self.discriminator.compile(loss=['binary_crossentropy'],
-            optimizer=optimizer,
-            metrics=['accuracy'])
+        self.discriminator.compile(loss=['binary_crossentropy'], optimizer=optimizer, metrics=['accuracy'])
 
         # Build and compile the recognition network Q
-        self.auxilliary.compile(loss=[self.mutual_info_loss],
-            optimizer=optimizer,
-            metrics=['accuracy'])
+        self.auxilliary.compile(loss=[self.mutual_info_loss], optimizer=optimizer, metrics=['accuracy'])
 
         # Build the generator
         self.generator = self.build_generator()
@@ -74,10 +70,7 @@ class INFOGAN():
         gen_input = Input(shape=(self.latent_dim,))
         img = model(gen_input)
 
-        model.summary()
-
-        return Model(gen_input, img)
-
+        return Model(inputs=gen_input, outputs=img, name='gen_model')
 
     def build_disk_and_q_net(self):
 
@@ -123,6 +116,7 @@ class INFOGAN():
         entropy = K.mean(- K.sum(K.log(c + eps) * c, axis=1))
 
         return conditional_entropy + entropy
+
 
     def sample_generator_input(self, batch_size):
         # Generator inputs
