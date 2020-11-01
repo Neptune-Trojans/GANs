@@ -70,3 +70,18 @@ class Visualization:
                        duration=200,
                        loop=0)
 
+    @staticmethod
+    def save_predicted_classes(gen_images, label, c1, path):
+        fig = plt.figure(figsize=(12, 12))
+
+        for i in range(gen_images.shape[0]):
+            ax = plt.subplot(2, 5, i + 1)
+            digit_class = np.argmax(label[i])
+            continuous = c1[i].numpy()[0]
+            ax.set_title("class {} c_1 {:.2f}".format(digit_class, continuous))
+            plt.imshow(gen_images[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
+            plt.axis('off')
+
+        plt.savefig(path)
+        plt.close()
+

@@ -161,18 +161,7 @@ class Trainer:
                 self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, epoch + 1))
 
         self._visualization.generate_gif_image()
-        self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, 'final'))
-
-
-
-# writer = tf.summary.create_file_writer("./infogan")
-# checkpoint_dir = './ckpt'
-# checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
-# checkpoint = tf.train.Checkpoint(generator_optimizer=gen_opt,
-#                                  discriminator_optimizer=dis_opt,
-#                                  generator=generator,
-#                                  discriminator=discriminator,
-#                                  qnet=qnet)
+        self._gen_model.save("{}/{}.h5".format(self._args.check_points, 'final'))
 
 
 if __name__ == "__main__":
