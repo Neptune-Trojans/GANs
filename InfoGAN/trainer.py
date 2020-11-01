@@ -1,11 +1,11 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from Helpers.training_visualization import Visualization
 from InfoGAN.discriminator import Discriminator
 from InfoGAN.generator import Generator
 from InfoGAN.mnist_data import load_data_mnist
 from InfoGAN.training_arguments import Arguments
+from InfoGAN.training_visualization import Visualization
 
 
 class Trainer:
@@ -17,9 +17,9 @@ class Trainer:
         self._disc_optimizer = self._create_optimizer(init_lr=2e-4)
         self._gen_optimizer = self._create_optimizer(init_lr=5e-4)
         self._q_optimizer = self._create_optimizer(init_lr=2e-4)
+        self._vis_label, self._vis_cat, self._vis_noise = self.create_gen_input(self._args.num_examples_to_generate, self._args.noise_dim, self._args.num_classes)
 
-        self._visualization_seed = tf.random.normal([self._args.num_examples_to_generate, self._args.noise_dim])
-        self._visualization = Visualization(self._args.visualization_folder, self._visualization_seed)
+        self._visualization = Visualization(self._args.visualization_folder, self._vis_label, self._vis_cat, self._vis_noise)
 
         self.categorical_loss = tf.keras.losses.CategoricalCrossentropy()
 
@@ -63,10 +63,6 @@ class Trainer:
 
         categorical_loss = tf.keras.metrics.Mean(name='categorical_loss')
         continuous_loss = tf.keras.metrics.Mean(name='continuous_loss')
-
-        # Define loss functions
-        binary_loss = tf.keras.losses.BinaryCrossentropy()
-
 
         # @tf.function
         def train_step(images, batch_size, noise_dim, num_classes):
@@ -150,7 +146,7 @@ class Trainer:
                                   generator_loss.result(), discriminator_loss.result(),
                                   categorical_loss.result(), continuous_loss.result()))
 
-            self._visualization.save_predicted_images(self._gen_model, epoch)
+            self._visualization.save_predicted_images(self._gen_model, self._q_model, epoch)
         self._visualization.generate_gif_image()
 
 
