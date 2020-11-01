@@ -14,8 +14,9 @@ class Arguments:
 
     @property
     def epoch_iteration_steps(self):
-        return self.buffer_size // self.batch_size
+        # while training discriminator we use half real images and half synthetic noise.
+        return self.buffer_size // self.batch_size * 2
 
     @property
     def total_iteration_steps(self):
-        return self.buffer_size // self.batch_size * self.epochs
+        return self.epoch_iteration_steps * self.epochs

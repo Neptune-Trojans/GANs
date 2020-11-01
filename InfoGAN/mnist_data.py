@@ -10,7 +10,7 @@ def load_data_mnist(buffer_size, batch_size):
     train_dataset = tf.data.Dataset. \
         from_tensor_slices(train_images). \
         shuffle(buffer_size, reshuffle_each_iteration=True). \
-        batch(batch_size, drop_remainder=True). \
+        batch(batch_size // 2, drop_remainder=True). \
         prefetch(tf.data.experimental.AUTOTUNE)
 
     return train_dataset
