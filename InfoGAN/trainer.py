@@ -158,10 +158,10 @@ class Trainer:
 
             self._visualization.save_predicted_images(self._gen_model, self._q_model, epoch)
             if epoch % 5 == 0:
-                self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, epoch + 1), save_weights=True)
+                self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, epoch + 1))
 
         self._visualization.generate_gif_image()
-        self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, 'final'), save_weights=True)
+        self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, 'final'))
 
 
 
