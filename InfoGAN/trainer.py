@@ -1,3 +1,6 @@
+import os
+import shutil
+
 import tensorflow as tf
 import tensorflow_probability as tfp
 
@@ -20,8 +23,15 @@ class Trainer:
         self._vis_label, self._vis_cat, self._vis_noise = self.create_gen_input(self._args.num_examples_to_generate, self._args.noise_dim, self._args.num_classes)
 
         self._visualization = Visualization(self._args.visualization_folder, self._vis_label, self._vis_cat, self._vis_noise)
-
         self.categorical_loss = tf.keras.losses.CategoricalCrossentropy()
+        self._generate_folders([self._args.visualization_folder, self._args.check_points])
+
+    @staticmethod
+    def _generate_folders(folders):
+        for folder in folders:
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+            os.makedirs(folder)
 
     @staticmethod
     def _create_optimizer(init_lr: float, adam_beta1: float = 0.9, adam_beta2: float = 0.999, adam_epsilon: float = 1e-8):
@@ -147,7 +157,11 @@ class Trainer:
                                   categorical_loss.result(), continuous_loss.result()))
 
             self._visualization.save_predicted_images(self._gen_model, self._q_model, epoch)
+            if epoch % 5 == 0:
+                self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, epoch + 1), save_weights=True)
+
         self._visualization.generate_gif_image()
+        self._gen_model.save("{}/model_{}.h5".format(self._args.check_points, 'final'), save_weights=True)
 
 
 

@@ -14,7 +14,6 @@ class Visualization:
     def __init__(self, visualization_base_folder, vis_label, vis_cat, vis_noise):
         self.visualization_base_folder = visualization_base_folder
         self._vis_label, self._vis_cat, self._vis_noise = vis_label, vis_cat, vis_noise
-        self._generate_vis_folder()
         self.fnt = ImageFont.truetype("FreeMonoBold.ttf", 25)
 
     @property
@@ -32,11 +31,6 @@ class Visualization:
     @property
     def epoch_file_path(self):
         return os.path.join(self.visualization_base_folder, self.epoch_file_name)
-
-    def _generate_vis_folder(self):
-        if os.path.exists(self.visualization_base_folder):
-            shutil.rmtree(self.visualization_base_folder)
-        os.makedirs(self.visualization_base_folder)
 
     def save_predicted_images(self, gen_model, q_model, epoch):
 

@@ -8,9 +8,10 @@ class Arguments:
     noise_dim: int = 89
     num_classes: int = 10
     num_examples_to_generate: int = 25
-    epochs: int = 256
+    epochs: int = 6
     init_lr: float = 0.0002
     visualization_folder: str = './training_visualization'
+    check_points: str = './check_points'
 
     @property
     def epoch_iteration_steps(self):
