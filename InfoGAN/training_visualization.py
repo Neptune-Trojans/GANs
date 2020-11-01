@@ -43,14 +43,15 @@ class Visualization:
         visualization_seed = tf.keras.layers.Concatenate()([self._vis_label, self._vis_cat, self._vis_noise])
         gen_image = gen_model(visualization_seed, training=False)
         cat_output, mu, sigma = q_model(gen_image, training=False)
-
-        fig = plt.figure(figsize=(10, 10))
+        mu = mu.numpy().flatten()
+        sigma = sigma.numpy().flatten()
+        fig = plt.figure(figsize=(18, 18))
 
         for i in range(gen_image.shape[0]):
             pred_class = np.argmax(cat_output[i])
             pred_class_prob = np.amax(cat_output[i])
-            ax = plt.subplot(4, 4, i + 1)
-            ax.set_title("pred class {} ({:.2f})".format(pred_class, pred_class_prob))
+            ax = plt.subplot(5, 5, i + 1)
+            ax.set_title("class {} ({:.2f}) \n miu {:.2f}, sigma {:.2f}".format(pred_class, pred_class_prob, mu[i], sigma[i]))
             plt.imshow(gen_image[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
             plt.axis('off')
 
