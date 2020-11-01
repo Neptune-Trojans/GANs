@@ -64,7 +64,7 @@ class Trainer:
         categorical_loss = tf.keras.metrics.Mean(name='categorical_loss')
         continuous_loss = tf.keras.metrics.Mean(name='continuous_loss')
 
-        # @tf.function
+        @tf.function
         def train_step(images, batch_size, noise_dim, num_classes):
             # Create generator input
             label, c_1, noise = self.create_gen_input(batch_size // 2, noise_dim, num_classes)
