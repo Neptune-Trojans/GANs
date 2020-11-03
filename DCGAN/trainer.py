@@ -1,12 +1,11 @@
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 from absl import app
 
 from DCGAN.BatchGenerator import BatchDataGenerator
-from DCGAN.training_arguments import Arguments, SupportedModels
+from DCGAN.training_arguments import Arguments
 from DCGAN.discriminator import Discriminator
 from DCGAN.generator import Generator
-from Helpers.training_visualization import Visualization
+from DCGAN.training_visualization import Visualization
 
 
 class Trainer:
@@ -24,24 +23,16 @@ class Trainer:
 
     @staticmethod
     def _create_optimizer(init_lr: float,
-                          num_train_steps: int,
-                          min_lr_ratio: float = 0.0,
-                          num_warmup_steps: int = 0,
                           adam_beta1: float = 0.9,
                           adam_beta2: float = 0.999,
                           adam_epsilon: float = 1e-8
                           ):
-        lr_schedule = tf.keras.optimizers.schedules.PolynomialDecay(
-            initial_learning_rate=init_lr,
-            decay_steps=num_train_steps - num_warmup_steps,
-            end_learning_rate=init_lr * min_lr_ratio,
-        )
 
         optimizer = tf.keras.optimizers.Adam(
-            learning_rate=lr_schedule, beta_1=adam_beta1, beta_2=adam_beta2, epsilon=adam_epsilon
+            learning_rate=init_lr, beta_1=adam_beta1, beta_2=adam_beta2, epsilon=adam_epsilon
         )
 
-        return optimizer, lr_schedule
+        return optimizer
 
     def discriminator_loss(self, real_output, fake_output):
         real_loss = self._cross_entropy(tf.ones_like(real_output), real_output)
@@ -54,8 +45,8 @@ class Trainer:
 
     def train(self):
 
-        generator_optimizer, generator_lr_schedule = self._create_optimizer(self._arguments.init_lr, self._arguments.total_iteration_steps)
-        discriminator_optimizer, discriminator_lr_schedule = self._create_optimizer(self._arguments.init_lr, self._arguments.total_iteration_steps)
+        generator_optimizer = self._create_optimizer(self._arguments.init_lr)
+        discriminator_optimizer = self._create_optimizer(self._arguments.init_lr)
 
         generator_loss = tf.keras.metrics.Mean(name='generator_loss')
         discriminator_loss = tf.keras.metrics.Mean(name='generator_loss')
@@ -104,28 +95,11 @@ class Trainer:
         self._visualization.generate_gif_image()
 
 
-
-# checkpoint_dir = './training_checkpoints'
-# checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
-# checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-#                                    discriminator_optimizer=discriminator_optimizer,
-#                                    generator=generator,
-#                                    discriminator=discriminator)
-
-
 def main(_):
     arguments = Arguments()
-
-    if arguments.model == SupportedModels.CIFAR10:
-        train_dataset = BatchDataGenerator.load_data_cifar(arguments.buffer_size, arguments.batch_size)
-        generator = Generator.make_generator_model_cifar()
-        discriminator = Discriminator.make_discriminator_model_scifar()
-    elif arguments.model == SupportedModels.MNIST:
-        train_dataset = BatchDataGenerator.load_data_mnist(arguments.buffer_size, arguments.batch_size)
-        generator = Generator.make_generator_model()
-        discriminator = Discriminator.make_discriminator_model()
-    else:
-        raise NotImplementedError()
+    train_dataset = BatchDataGenerator.load_data_mnist(arguments.buffer_size, arguments.batch_size)
+    generator = Generator.make_generator_model()
+    discriminator = Discriminator.make_discriminator_model()
 
     trainer = Trainer(arguments, train_dataset, generator, discriminator)
 
