@@ -1,5 +1,11 @@
 # Implementation of Different GAN architectures in Tensorflow 2
 
+### InfoGAN
+Implementation of _InfoGAN: Interpretable Representation Learning by Information Maximizing Generative Adversarial Nets_.
+
+Paper: https://arxiv.org/abs/1606.03657
+
+
 ## Environment
 
 ```
