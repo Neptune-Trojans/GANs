@@ -3,7 +3,10 @@
 ## Environment
 
 ```
-python==3.6
+python==3.7
 tensorflow==2.3
 ```
+
+## Installation
+    $ git clone https://github.com/Neptune-Trojans/GANs
 
